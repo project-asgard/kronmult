@@ -1,126 +1,156 @@
-    cmake_minimum_required(VERSION 3.8 FATAL_ERROR)
-    cmake_policy(SET CMP0074 NEW)
+    cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+
+#-------------------------------------------------------------------------------
+#  Setup languages to use. Only enable CUDA if GPU's are in use.
+#-------------------------------------------------------------------------------
+    project(kronmult LANGUAGES CXX)
+
+    option (USE_GPU "Use CUDA for gpu support" OFF)
     if (USE_GPU)
-        project(kronmult LANGUAGES CXX CUDA) 
-        find_package(CUDA 9.0 REQUIRED)
-        add_compile_definitions(USE_GPU)
-        set (CMAKE_CUDA_STANDARD 14)
-        set (CMAKE_CUDA_STANDARD_REQUIRED ON)
-    else ()
-        project(kronmult LANGUAGES CXX) 
+        enable_language(CUDA)
     endif ()
-    
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -O3 -g")
+
+#-------------------------------------------------------------------------------
+#  Find 3rd party libraries.
+#-------------------------------------------------------------------------------
     find_package(OpenMP)
 
-    if(OpenMP_CXX_FOUND)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-        if(USE_MKL)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
-        endif()
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
-    else ()
-	message("-- WARNING - building kronmult without openMP support ---")
+#-------------------------------------------------------------------------------
+#  Configure kron target.
+#-------------------------------------------------------------------------------
+    add_library (kron SHARED)
+
+    target_sources (kron
+                    PUBLIC
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nn_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nn.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nt_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nt.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kroncommon.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1_pbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1_xbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2_pbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2_xbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3_pbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3_xbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4_pbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4_xbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5_pbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5_xbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6_batched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6_pbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6_xbatched.hpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6.hpp>
+
+                    PRIVATE
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nn_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nn.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nt_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kgemm_nt.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1_pbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult1_xbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2_pbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult2_xbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3_pbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult3_xbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4_pbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult4_xbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5_pbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult5_xbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6_batched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6_pbatched.cpp>
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/kronmult6_xbatched.cpp>
+    )
+
+    target_compile_options (kron
+                            PRIVATE
+                            $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
+                            $<$<COMPILE_LANGUAGE:CUDA>:-x cu -arch sm_60 --compiler-options -fPIC --keep-device-functions>
+    )
+
+#  Can't use $<$<COMPILE_LANGUAGE:LANG>:foo> generator expressions for
+#  target_compile_features
+#
+#  Need to handle this with an explicit if statement.
+#
+    target_compile_features (kron PUBLIC cxx_std_11)
+    if (USE_GPU)
+        target_compile_features (kron PUBLIC cuda_std_14)
     endif ()
 
-    include(CTest)
-    
-    set(KRONSRC 
-	kgemm_nn_batched.cpp 
-	kgemm_nn_batched.hpp 
-	kgemm_nn.cpp 
-	kgemm_nn.hpp 
-	kgemm_nt_batched.cpp 
-	kgemm_nt_batched.hpp 
-	kgemm_nt.cpp 
-	kgemm_nt.hpp 
-	kroncommon.hpp 
-	kronmult1_batched.cpp 
-	kronmult1_batched.hpp 
-	kronmult1_pbatched.cpp 
-	kronmult1_pbatched.hpp 
-	kronmult1_xbatched.cpp
-	kronmult1_xbatched.hpp
-	kronmult1.hpp 
-	kronmult2_batched.cpp 
-	kronmult2_batched.hpp 
-	kronmult2_pbatched.cpp 
-	kronmult2_pbatched.hpp
-	kronmult2_xbatched.cpp
-	kronmult2_xbatched.hpp
-	kronmult2.hpp 
-	kronmult3_batched.cpp 
-	kronmult3_batched.hpp 
-	kronmult3_pbatched.cpp 
-	kronmult3_pbatched.hpp
-	kronmult3_xbatched.cpp
-	kronmult3_xbatched.hpp
-	kronmult3.hpp 
-	kronmult4_batched.cpp 
-	kronmult4_batched.hpp 
-	kronmult4_pbatched.cpp 
-	kronmult4_pbatched.hpp 
-	kronmult4_xbatched.cpp
-	kronmult4_xbatched.hpp
-	kronmult4.hpp 
-	kronmult5_batched.cpp 
-	kronmult5_batched.hpp 
-	kronmult5_pbatched.cpp 
-	kronmult5_pbatched.hpp 
-	kronmult5_xbatched.cpp
-	kronmult5_xbatched.hpp
-	kronmult5.hpp 
-	kronmult6_batched.cpp 
-	kronmult6_batched.hpp 
-	kronmult6_pbatched.hpp 
-	kronmult6_pbatched.cpp 
-	kronmult6_xbatched.cpp
-	kronmult6_xbatched.hpp
-	kronmult6.hpp 
-      )
-   
-    if(USE_GPU)
-	set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -arch sm_60 --compiler-options -fPIC --keep-device-functions")
-        if(USE_MKL)
-	  set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -arch sm_60 --compiler-options -fopenmp -fPIC --keep-device-functions")
-        endif()
-	set_source_files_properties( ${KRONSRC} PROPERTIES LANGUAGE CUDA )
-    endif()
-  
+    target_compile_definitions (kron
+                                PRIVATE
+                                $<$<COMPILE_LANGUAGE:CUDA>:USE_GPU>
+    )
 
-    add_library(kron SHARED ${KRONSRC})
-    if(USE_GPU)
-        set_target_properties( kron PROPERTIES CUDA_ARCHITECTURES OFF)
-    endif()
-    target_compile_features(kron PUBLIC cxx_std_11)
-   
-    set(TESTSRC 
-	test_kronmult6_batched.cpp 
-	test_kronmult6_pbatched.cpp
-        test_kronmult6_xbatched.cpp	
-	test_kgemm_nn_batched.cpp 
-	test_kgemm_nt_batched.cpp 
-      )
+    target_link_libraries (kron INTERFACE OpenMP::OpenMP_CXX)
 
-    if(USE_GPU)
-	    set_source_files_properties( ${TESTSRC} PROPERTIES LANGUAGE CUDA )
-    endif ()
+#-------------------------------------------------------------------------------
+#  Setup testing
+#-------------------------------------------------------------------------------
+    include (CTest)
 
+#-------------------------------------------------------------------------------
+#  Configure kgemm_nn_test target.
+#-------------------------------------------------------------------------------
+    add_executable (kgemm_nn_test)
+    target_sources (kgemm_nn_test
+                    PRIVATE
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test_kgemm_nn_batched.cpp>
+    )
+    target_link_libraries(kgemm_nn_test PRIVATE kron)
 
-    add_executable(kgemm_nn_test test_kgemm_nn_batched.cpp) 
-    add_executable(kgemm_nt_test test_kgemm_nt_batched.cpp)
-    add_executable(test_kronmult6_batched test_kronmult6_batched.cpp)
-    add_executable(test_kronmult6_pbatched test_kronmult6_pbatched.cpp) 
-    add_executable(test_kronmult6_xbatched test_kronmult6_xbatched.cpp)
-    
-    set_target_properties( kgemm_nn_test PROPERTIES CUDA_ARCHITECTURES OFF)
-    set_target_properties( kgemm_nt_test PROPERTIES CUDA_ARCHITECTURES OFF)
-    set_target_properties( test_kronmult6_batched PROPERTIES CUDA_ARCHITECTURES OFF)
-    set_target_properties( test_kronmult6_pbatched PROPERTIES CUDA_ARCHITECTURES OFF)
-    set_target_properties( test_kronmult6_xbatched PROPERTIES CUDA_ARCHITECTURES OFF)
-    
-    target_link_libraries(kgemm_nn_test PRIVATE kron) 
+#-------------------------------------------------------------------------------
+#  Configure kgemm_nt_test target.
+#-------------------------------------------------------------------------------
+    add_executable (kgemm_nt_test)
+    target_sources (kgemm_nt_test
+                    PRIVATE
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test_kgemm_nt_batched.cpp>
+    )
     target_link_libraries(kgemm_nt_test PRIVATE kron)
+
+#-------------------------------------------------------------------------------
+#  Configure test_kronmult6_batched target.
+#-------------------------------------------------------------------------------
+    add_executable (test_kronmult6_batched)
+    target_sources (test_kronmult6_batched
+                    PRIVATE
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test_kronmult6_batched.cpp>
+    )
     target_link_libraries(test_kronmult6_batched PRIVATE kron)
-    target_link_libraries(test_kronmult6_pbatched PRIVATE kron) 
+
+#-------------------------------------------------------------------------------
+#  Configure (test_kronmult6_pbatched) target.
+#-------------------------------------------------------------------------------
+    add_executable (test_kronmult6_pbatched)
+    target_sources (test_kronmult6_pbatched
+                    PRIVATE
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test_kronmult6_pbatched.cpp>
+    )
+    target_link_libraries(test_kronmult6_pbatched PRIVATE kron)
+
+#-------------------------------------------------------------------------------
+#  Configure test_kronmult6_xbatched target.
+#-------------------------------------------------------------------------------
+    add_executable (test_kronmult6_xbatched)
+    target_sources (test_kronmult6_xbatched
+                    PRIVATE
+                    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/test_kronmult6_xbatched.cpp>
+    )
     target_link_libraries(test_kronmult6_xbatched PRIVATE kron)
