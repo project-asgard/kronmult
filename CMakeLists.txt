@@ -97,7 +97,7 @@
     )
 
     target_compile_features (kron PUBLIC cxx_std_11)
-    target_set_cuda(kron)
+    target_set_cuda (kron)
 
     target_compile_options (kron
                             PRIVATE
@@ -125,7 +125,7 @@
                     PRIVATE
                     test_kgemm_nn_batched.cpp
     )
-    target_set_cuda(kgemm_nn_test)
+    target_set_cuda (kgemm_nn_test)
     target_link_libraries (kgemm_nn_test PUBLIC kron)
 
 #-------------------------------------------------------------------------------
@@ -136,7 +136,7 @@
                     PRIVATE
                     test_kgemm_nt_batched.cpp
     )
-    target_set_cuda(kgemm_nt_test)
+    target_set_cuda (kgemm_nt_test)
     target_link_libraries (kgemm_nt_test PUBLIC kron)
 
 #-------------------------------------------------------------------------------
@@ -147,7 +147,7 @@
                     PRIVATE
                     test_kronmult6_batched.cpp
     )
-    target_set_cuda(test_kronmult6_batched)
+    target_set_cuda (test_kronmult6_batched)
     target_link_libraries (test_kronmult6_batched PUBLIC kron)
 
 #-------------------------------------------------------------------------------
@@ -158,7 +158,7 @@
                     PRIVATE
                     test_kronmult6_pbatched.cpp
     )
-    target_set_cuda(test_kronmult6_pbatched)
+    target_set_cuda (test_kronmult6_pbatched)
     target_link_libraries (test_kronmult6_pbatched PUBLIC kron)
 
 #-------------------------------------------------------------------------------
@@ -169,5 +169,5 @@
                     PRIVATE
                     test_kronmult6_xbatched.cpp
     )
-    target_set_cuda(test_kronmult6_xbatched)
+    target_set_cuda (test_kronmult6_xbatched)
     target_link_libraries (test_kronmult6_xbatched PUBLIC kron)
