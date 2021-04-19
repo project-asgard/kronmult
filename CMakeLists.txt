@@ -1,13 +1,13 @@
-    cmake_minimum_required(VERSION 3.17 FATAL_ERROR)
+    cmake_minimum_required (VERSION 3.17 FATAL_ERROR)
 
 #-------------------------------------------------------------------------------
 #  Setup languages to use. Only enable CUDA if GPU's are in use.
 #-------------------------------------------------------------------------------
-    project(kronmult LANGUAGES CXX)
+    project (kronmult LANGUAGES CXX)
 
     option (USE_GPU "Use CUDA for gpu support" OFF)
     if (USE_GPU)
-        enable_language(CUDA)
+        enable_language (CUDA)
     endif ()
 
 #-------------------------------------------------------------------------------
@@ -30,7 +30,7 @@
 #-------------------------------------------------------------------------------
 #  Find 3rd party libraries.
 #-------------------------------------------------------------------------------
-    find_package(OpenMP)
+    find_package (OpenMP)
 
 #-------------------------------------------------------------------------------
 #  Configure kron target.
@@ -110,7 +110,9 @@
                                 $<$<COMPILE_LANGUAGE:CUDA>:USE_GPU>
     )
 
-    target_link_libraries (kron PUBLIC OpenMP::OpenMP_CXX)
+    if (OpenMP_CXX_FOUND)
+        target_link_libraries (kron PUBLIC OpenMP::OpenMP_CXX)
+    endif ()
 
 #-------------------------------------------------------------------------------
 #  Setup testing
