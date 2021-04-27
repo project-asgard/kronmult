@@ -120,56 +120,23 @@
     include (CTest)
 
 #-------------------------------------------------------------------------------
-#  Configure kgemm_nn_test target.
+#  Define a macro function to regester tests.
 #-------------------------------------------------------------------------------
-    add_executable (kgemm_nn_test)
-    target_sources (kgemm_nn_test
-                    PRIVATE
-                    test_kgemm_nn_batched.cpp
-    )
-    target_set_cuda (kgemm_nn_test)
-    target_link_libraries (kgemm_nn_test PUBLIC kron)
+    macro (add_test_target target source)
+        add_executable (${target})
+        target_sources (${target}
+                        PRIVATE
+                        ${source}
+        )
+        target_set_cuda (${target})
+        target_link_libraries (${target} PUBLIC kron)
+    endmacro ()
 
 #-------------------------------------------------------------------------------
-#  Configure kgemm_nt_test target.
+#  Configure test targets.
 #-------------------------------------------------------------------------------
-    add_executable (kgemm_nt_test)
-    target_sources (kgemm_nt_test
-                    PRIVATE
-                    test_kgemm_nt_batched.cpp
-    )
-    target_set_cuda (kgemm_nt_test)
-    target_link_libraries (kgemm_nt_test PUBLIC kron)
-
-#-------------------------------------------------------------------------------
-#  Configure test_kronmult6_batched target.
-#-------------------------------------------------------------------------------
-    add_executable (test_kronmult6_batched)
-    target_sources (test_kronmult6_batched
-                    PRIVATE
-                    test_kronmult6_batched.cpp
-    )
-    target_set_cuda (test_kronmult6_batched)
-    target_link_libraries (test_kronmult6_batched PUBLIC kron)
-
-#-------------------------------------------------------------------------------
-#  Configure (test_kronmult6_pbatched) target.
-#-------------------------------------------------------------------------------
-    add_executable (test_kronmult6_pbatched)
-    target_sources (test_kronmult6_pbatched
-                    PRIVATE
-                    test_kronmult6_pbatched.cpp
-    )
-    target_set_cuda (test_kronmult6_pbatched)
-    target_link_libraries (test_kronmult6_pbatched PUBLIC kron)
-
-#-------------------------------------------------------------------------------
-#  Configure test_kronmult6_xbatched target.
-#-------------------------------------------------------------------------------
-    add_executable (test_kronmult6_xbatched)
-    target_sources (test_kronmult6_xbatched
-                    PRIVATE
-                    test_kronmult6_xbatched.cpp
-    )
-    target_set_cuda (test_kronmult6_xbatched)
-    target_link_libraries (test_kronmult6_xbatched PUBLIC kron)
+    add_test_target (kgemm_nn_test test_kgemm_nn_batched.cpp)
+    add_test_target (kgemm_nt_test test_kgemm_nt_batched.cpp)
+    add_test_target (test_kronmult6_batched test_kronmult6_batched.cpp)
+    add_test_target (test_kronmult6_pbatched test_kronmult6_pbatched.cpp)
+    add_test_target (test_kronmult6_xbatched test_kronmult6_xbatched.cpp)
