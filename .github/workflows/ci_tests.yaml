@@ -16,10 +16,10 @@ jobs:
               run: git clone https://github.com/cianciosa/kronmult.git
             - name: Makedir
               working-directory: ${{runner.workspace}}/kronmult
-              run: cmake -E make_directory {{runner.workspace}}/kronmult/build
+              run: cmake -E make_directory build
             - name: Configure
               working-directory: ${{runner.workspace}}/kronmult/build
-              run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}}
+              run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
             - name: Build
               working-directory: ${{runner.workspace}}/kronmult/build
               run: make
