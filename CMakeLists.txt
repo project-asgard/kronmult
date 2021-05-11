@@ -11,6 +11,16 @@
     endif ()
 
 #-------------------------------------------------------------------------------
+#  Setup a menu of build types.
+#-------------------------------------------------------------------------------
+    set_property (CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS
+                  Debug
+                  Release
+                  MinSizeRel
+                  RelWithDebInfo
+    )
+
+#-------------------------------------------------------------------------------
 #  Define a macro function to set a targets source files to the CUDA language.
 #
 #  Can't use $<$<COMPILE_LANGUAGE:LANG>:foo> generator expressions for
@@ -96,17 +106,22 @@
                     kronmult6_xbatched.cpp
     )
 
-    target_compile_features (kron PUBLIC cxx_std_11)
+    target_compile_features (kron PUBLIC cxx_std_17)
     target_set_cuda (kron)
 
     target_compile_options (kron
-                            PRIVATE
+                            PUBLIC
+                            $<$<CONFIG:Debug>:-fsanitize=address>
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             $<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
     )
+    target_link_options (kron
+                         PUBLIC
+                         $<$<CONFIG:Debug>:-fsanitize=address>
+    )
 
     target_compile_definitions (kron
-                                PRIVATE
+                                PUBLIC
                                 $<$<COMPILE_LANGUAGE:CUDA>:USE_GPU>
     )
 
