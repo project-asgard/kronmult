@@ -19,7 +19,7 @@ jobs:
               run: cmake -E make_directory {{runner.workspace}}/kronmult/build
             - name: Configure
               working-directory: ${{runner.workspace}}/kronmult/build
-              run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}}
+              run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
             - name: Build
               working-directory: ${{runner.workspace}}/kronmult/build
               run: make
