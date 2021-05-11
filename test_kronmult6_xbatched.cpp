@@ -622,12 +622,12 @@ T test_kronmult_xbatched(  int const idim,
 
         free(pdXarray_); pdXarray_ = nullptr;
         free(pdYarray_); pdYarray_ = nullptr;
-        free(pdZarray_); pdYarray_ = nullptr;
+        free(pdZarray_); pdZarray_ = nullptr;
         free(pdWarray_); pdWarray_ = nullptr;
 
         myfree(dpdXarray_); dpdXarray_ = nullptr;
         myfree(dpdZarray_); dpdZarray_ = nullptr;
-        myfree(dpdZarray_); dpdYarray_ = nullptr;
+        myfree(dpdYarray_); dpdYarray_ = nullptr;
         myfree(dpdWarray_); dpdWarray_ = nullptr;
 
         free( Aarray_ ); Aarray_ = nullptr;
