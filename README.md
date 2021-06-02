@@ -1,3 +1,5 @@
+[![Continuous Integration Test](https://github.com/cianciosa/kronmult/actions/workflows/ci_tests.yaml/badge.svg)](https://github.com/cianciosa/kronmult/actions/workflows/ci_tests.yaml)
+
 Code to perform 6-dimensional batched kronecker product on  GPU and CPU (using OpenMP).
 
 Y(:,k) += kron(A1(:,:,k), ..., A6(:,:,k) ) * X(:,k),   where k=1:batchCount

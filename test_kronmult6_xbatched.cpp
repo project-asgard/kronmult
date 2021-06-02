@@ -620,14 +620,24 @@ T test_kronmult_xbatched(  int const idim,
         myfree( dZarray_ ); dZarray_ = nullptr;
         myfree( dWarray_ ); dWarray_ = nullptr;
 
+        free(pdXarray_); pdXarray_ = nullptr;
+        free(pdYarray_); pdYarray_ = nullptr;
+        free(pdZarray_); pdZarray_ = nullptr;
+        free(pdWarray_); pdWarray_ = nullptr;
+
+        myfree(dpdXarray_); dpdXarray_ = nullptr;
+        myfree(dpdZarray_); dpdZarray_ = nullptr;
+        myfree(dpdYarray_); dpdYarray_ = nullptr;
+        myfree(dpdWarray_); dpdWarray_ = nullptr;
+
         free( Aarray_ ); Aarray_ = nullptr;
         free( Aparray_ ); Aparray_ = nullptr;
 
         free( Xarray_ ); Xarray_ = nullptr;
         free( Yarray_ ); Yarray_ = nullptr;
-        if (use_overlap_in_Y) {
+//        if (use_overlap_in_Y) {
           free( Y2array_ ); Y2array_ = nullptr;
-        };
+//        };
 
         free( Zarray_ ); Zarray_ = nullptr;
         free( Warray_ ); Warray_ = nullptr;
