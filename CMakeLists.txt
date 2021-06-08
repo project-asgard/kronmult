@@ -50,36 +50,6 @@
 #  Note can't use generator expressions on the source files since it interfers
 #  with setting the source property to target CUDA.
     target_sources (kron
-                    INTERFACE
-                    kgemm_nn_batched.hpp
-                    kgemm_nn.hpp
-                    kgemm_nt_batched.hpp
-                    kgemm_nt.hpp
-                    kroncommon.hpp
-                    kronmult1_batched.hpp
-                    kronmult1_pbatched.hpp
-                    kronmult1_xbatched.hpp
-                    kronmult2_batched.hpp
-                    kronmult2_pbatched.hpp
-                    kronmult2_xbatched.hpp
-                    kronmult2.hpp
-                    kronmult1.hpp
-                    kronmult3_batched.hpp
-                    kronmult3_pbatched.hpp
-                    kronmult3_xbatched.hpp
-                    kronmult3.hpp
-                    kronmult4_batched.hpp
-                    kronmult4_pbatched.hpp
-                    kronmult4_xbatched.hpp
-                    kronmult4.hpp
-                    kronmult5_batched.hpp
-                    kronmult5_pbatched.hpp
-                    kronmult5_xbatched.hpp
-                    kronmult5.hpp
-                    kronmult6_batched.hpp
-                    kronmult6_pbatched.hpp
-                    kronmult6_xbatched.hpp
-                    kronmult6.hpp
 
                     PRIVATE
                     kgemm_nn_batched.cpp
@@ -107,7 +77,8 @@
     )
     target_include_directories (kron
                                 PUBLIC
-                                $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}>)
+                                ${CMAKE_CURRENT_SOURCE_DIR}
+    )
 
     target_compile_features (kron PUBLIC cxx_std_17)
     target_set_cuda (kron)
