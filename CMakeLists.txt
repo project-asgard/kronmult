@@ -105,6 +105,9 @@
                     kronmult6_pbatched.cpp
                     kronmult6_xbatched.cpp
     )
+    target_include_directories (kron
+                                PUBLIC
+                                $<$<COMPILE_LANGUAGE:CXX>:${CMAKE_CURRENT_SOURCE_DIR}>)
 
     target_compile_features (kron PUBLIC cxx_std_17)
     target_set_cuda (kron)
