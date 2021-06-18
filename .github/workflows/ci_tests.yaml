@@ -20,9 +20,11 @@ jobs:
             - name: Configure
               working-directory: ${{runner.workspace}}/kronmult/build
               if: matrix.node == 'Debug'
-                  - run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=address ../
+                  - name: Debug Configure
+                    run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=address ../
               if: matrix.node == 'Release'
-                  - run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
+                  - name: Release Configure
+                    run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
             - name: Build
               working-directory: ${{runner.workspace}}/kronmult/build
               run: make
