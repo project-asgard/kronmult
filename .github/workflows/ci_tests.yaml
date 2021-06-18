@@ -19,7 +19,6 @@ jobs:
               run: cmake -E make_directory build
             - name: Configure
               working-directory: ${{runner.workspace}}/kronmult/build
-              if: matrix.node == 'Debug'
               run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
             - name: Build
               working-directory: ${{runner.workspace}}/kronmult/build
