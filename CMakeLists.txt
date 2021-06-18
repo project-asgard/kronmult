@@ -85,13 +85,8 @@
 
     target_compile_options (kron
                             PUBLIC
-                            $<$<CONFIG:Debug>:-fsanitize=address>
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             $<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
-    )
-    target_link_options (kron
-                         PUBLIC
-                         $<$<CONFIG:Debug>:-fsanitize=address>
     )
 
     target_compile_definitions (kron
