@@ -22,6 +22,7 @@ jobs:
               if: matrix.node == 'Debug'
               run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=address ../
             - name: Configure Release
+              working-directory: ${{runner.workspace}}/kronmult/build
               if: matrix.node == 'Release'
               run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
             - name: Build
