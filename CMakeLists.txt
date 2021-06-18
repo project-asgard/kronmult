@@ -43,7 +43,7 @@
     endmacro ()
 
     register_sanitizer_option (address ON)
-    register_sanitizer_option (leak ON)
+    register_sanitizer_option (leak OFF)
     register_sanitizer_option (memory OFF)
     register_sanitizer_option (thread OFF)
     register_sanitizer_option (undefined ON)
