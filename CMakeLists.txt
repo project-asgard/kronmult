@@ -24,22 +24,22 @@
 #-------------------------------------------------------------------------------
 #  Sanitizer options
 #-------------------------------------------------------------------------------
-#    set (CMAKE_CXX_FLAGS_SANITIZED -fno-omit-frame-pointer)
-#    set (CMAKE_CUDA_FLAGS_SANITIZED -fno-omit-frame-pointer)
-#    set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "")
-#    set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "")
+    set (CMAKE_CXX_FLAGS_SANITIZED -fno-omit-frame-pointer)
+    set (CMAKE_CUDA_FLAGS_SANITIZED -fno-omit-frame-pointer)
+    set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "")
+    set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "")
 
     macro (register_sanitizer_option name default)
         string (TOUPPER ${name} upper_name)
 
         option (SANITIZE_${upper_name} "Enable the ${name} sanitizer" ${default})
 
-#        if (${SANITIZE_${upper_name}})
-#            set (CMAKE_CXX_FLAGS_SANITIZED "${CMAKE_CXX_FLAGS_SANITIZED} -fsanitize=${name}")
-#            set (CMAKE_CUDA_FLAGS_SANITIZED "${CMAKE_CUDA_FLAGS_SANITIZED} -fsanitize=${name}")
-#            set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "${CMAKE_EXE_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
-#            set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "${CMAKE_SHARED_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
-#        endif ()
+        if (${SANITIZE_${upper_name}})
+            set (CMAKE_CXX_FLAGS_SANITIZED "${CMAKE_CXX_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_CUDA_FLAGS_SANITIZED "${CMAKE_CUDA_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "${CMAKE_EXE_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "${CMAKE_SHARED_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
+        endif ()
     endmacro ()
 
     register_sanitizer_option (address ON)
@@ -113,25 +113,8 @@
 
     target_compile_options (kron
                             PUBLIC
-                            $<$<CONFIG:Sanitized>:-fno-omit-frame-pointer
-                                                  $<$<BOOL:${SANITIZE_ADDRESS}>:-fsanitize=address>
-                                                  $<$<BOOL:${SANITIZE_THREAD}>:-fsanitize=thread>
-                                                  $<$<BOOL:${SANITIZE_MEMORY}>:-fsanitize=memory>
-                                                  $<$<BOOL:${SANITIZE_UNDEFINED}>:-fsanitize=undefined>
-                                                  $<$<BOOL:${SANITIZE_LEAK}>:-fsanitize=undefined>
-                            >
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             $<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
-    )
-    target_link_options (kron
-                         PUBLIC
-                         $<$<CONFIG:Sanitized>:-fno-omit-frame-pointer
-                                               $<$<BOOL:${SANITIZE_ADDRESS}>:-fsanitize=address>
-                                               $<$<BOOL:${SANITIZE_THREAD}>:-fsanitize=thread>
-                                               $<$<BOOL:${SANITIZE_MEMORY}>:-fsanitize=memory>
-                                               $<$<BOOL:${SANITIZE_UNDEFINED}>:-fsanitize=undefined>
-                                               $<$<BOOL:${SANITIZE_LEAK}>:-fsanitize=undefined>
-                         >
     )
 
     target_compile_definitions (kron

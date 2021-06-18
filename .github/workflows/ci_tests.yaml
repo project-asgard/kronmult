@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: [macos-latest, ubuntu-latest]
-                node: [Release, Debug]
+                node: [Release, Sanitized]
         runs-on: ${{matrix.os}}
         steps:
             - name: Clone Repo
@@ -17,13 +17,9 @@ jobs:
             - name: Makedir
               working-directory: ${{runner.workspace}}/kronmult
               run: cmake -E make_directory build
-            - name: Configure Debug
+            - name: Configure
               working-directory: ${{runner.workspace}}/kronmult/build
               if: matrix.node == 'Debug'
-              run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} -DCMAKE_CXX_FLAGS_DEBUG=-fsanitize=address ../
-            - name: Configure Release
-              working-directory: ${{runner.workspace}}/kronmult/build
-              if: matrix.node == 'Release'
               run: cmake -DCMAKE_BUILD_TYPE=${{matrix.node}} ../
             - name: Build
               working-directory: ${{runner.workspace}}/kronmult/build
