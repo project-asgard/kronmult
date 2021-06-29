@@ -1,5 +1,7 @@
 # Kronmult
 
+**This project is archived. Please see [Kronmult993](https://github.com/project-asgard/kronmult993) for the current developement version.**
+
 This library implements the `kronmult_batched` function which computes `output[K] += kron(matrix_list[K]) * input[K]` (k
 being an index in a batch)
 which is a batch version of the matrix product of the kronecker product of several matrices and a given *vector*.
