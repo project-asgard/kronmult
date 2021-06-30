@@ -18,7 +18,35 @@
                   Release
                   MinSizeRel
                   RelWithDebInfo
+                  Sanitized
     )
+
+#-------------------------------------------------------------------------------
+#  Sanitizer options
+#-------------------------------------------------------------------------------
+    set (CMAKE_CXX_FLAGS_SANITIZED -fno-omit-frame-pointer)
+    set (CMAKE_CUDA_FLAGS_SANITIZED -fno-omit-frame-pointer)
+    set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "")
+    set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "")
+
+    macro (register_sanitizer_option name default)
+        string (TOUPPER ${name} upper_name)
+
+        option (SANITIZE_${upper_name} "Enable the ${name} sanitizer" ${default})
+
+        if (${SANITIZE_${upper_name}})
+            set (CMAKE_CXX_FLAGS_SANITIZED "${CMAKE_CXX_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_CUDA_FLAGS_SANITIZED "${CMAKE_CUDA_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "${CMAKE_EXE_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "${CMAKE_SHARED_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
+        endif ()
+    endmacro ()
+
+    register_sanitizer_option (address ON)
+    register_sanitizer_option (leak OFF)
+    register_sanitizer_option (memory OFF)
+    register_sanitizer_option (thread OFF)
+    register_sanitizer_option (undefined ON)
 
 #-------------------------------------------------------------------------------
 #  Define a macro function to set a targets source files to the CUDA language.
@@ -85,13 +113,8 @@
 
     target_compile_options (kron
                             PUBLIC
-                            $<$<CONFIG:Debug>:-fsanitize=address>
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             $<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
-    )
-    target_link_options (kron
-                         PUBLIC
-                         $<$<CONFIG:Debug>:-fsanitize=address>
     )
 
     target_compile_definitions (kron

@@ -8,7 +8,7 @@ jobs:
         strategy:
             matrix:
                 os: [macos-latest, ubuntu-latest]
-                node: [Release, Debug]
+                node: [Release, Sanitized]
         runs-on: ${{matrix.os}}
         steps:
             - name: Clone Repo
