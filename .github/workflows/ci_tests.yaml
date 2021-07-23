@@ -11,9 +11,8 @@ jobs:
                 node: [Release, Sanitized]
         runs-on: ${{matrix.os}}
         steps:
-            - name: Clone Repo
-              working-directory: ${{runner.workspace}}
-              run: git clone https://github.com/cianciosa/kronmult.git
+            - name: Git checkout
+              uses: actions/checkout@v1
             - name: Makedir
               working-directory: ${{runner.workspace}}/kronmult
               run: cmake -E make_directory build
