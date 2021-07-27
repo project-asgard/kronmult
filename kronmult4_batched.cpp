@@ -13,7 +13,7 @@ void kronmult4_batched(
         int constexpr nwarps = 8;
         int constexpr nthreads = nwarps * warpsize;
 
-        kronmult4_batched<double><<< batchCount, nthreads >>>( n, 
+        hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult4_batched<double>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
            Aarray_, Xarray_, Yarray_, Warray_, batchCount);
 #else
         kronmult4_batched<double>( n, 

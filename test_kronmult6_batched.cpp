@@ -13,7 +13,7 @@
 
 
 #ifdef USE_GPU
-#include <cuda_runtime.h>
+#include <hip/hip_runtime.h>
 #else
 #include <stdlib.h>
 #include <string.h>
@@ -24,11 +24,11 @@ static inline
 void host2gpu( void *dest, void *src, size_t nbytes )
 {
 #ifdef USE_GPU
-        cudaError_t istat = cudaMemcpy( dest, 
-                                        src, 
-                                        nbytes,  
-                                        cudaMemcpyHostToDevice );
-        expect( istat == cudaSuccess );
+        hipError_t istat = hipMemcpy( dest,
+                                        src,
+                                        nbytes,
+                                        hipMemcpyHostToDevice );
+        expect( istat == hipSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -38,11 +38,11 @@ static inline
 void gpu2host( void *dest, void *src, size_t nbytes )
 {
 #ifdef USE_GPU
-        cudaError_t istat = cudaMemcpy( dest,
+        hipError_t istat = hipMemcpy( dest,
                                         src,
                                         nbytes,
-                                        cudaMemcpyDeviceToHost);
-        expect( istat == cudaSuccess );
+                                        hipMemcpyDeviceToHost);
+        expect( istat == hipSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -53,8 +53,8 @@ static inline
 void *myalloc( size_t nbytes ) {
               void *devPtr = nullptr;
 #ifdef USE_GPU
-              cudaError_t istat = cudaMalloc( &devPtr, nbytes );
-              expect( istat == cudaSuccess );
+              hipError_t istat = hipMalloc( &devPtr, nbytes );
+              expect( istat == hipSuccess );
 #else
               devPtr = malloc( nbytes );
 #endif
@@ -65,8 +65,8 @@ void *myalloc( size_t nbytes ) {
 static inline
 void myfree( void * devPtr ) {
 #ifdef USE_GPU
-                cudaError_t istat = cudaFree( devPtr);
-                expect( istat == cudaSuccess );
+                hipError_t istat = hipFree( devPtr);
+                expect( istat == hipSuccess );
 #else
                 free( devPtr );
 #endif
@@ -195,42 +195,42 @@ T test_kronmult_batched(  int const idim,
         // note  the input Zarray will be over-written
         // --------------------------------------------
         switch(idim) { 
-        case 1:  kronmult1_batched<T><<< batchCount, nthreads >>>( n,
+        case 1:  hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult1_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
                            dAarray_,
                            dZarray_,
                            dYarray_,
                            dWarray_,
                            batchCount );
             break;
-        case 2:  kronmult2_batched<T><<< batchCount, nthreads >>>( n,
+        case 2:  hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult2_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
                            dAarray_,
                            dZarray_,
                            dYarray_,
                            dWarray_,
                            batchCount );
             break;
-        case 3:  kronmult3_batched<T><<< batchCount, nthreads >>>( n,
+        case 3:  hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult3_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
                            dAarray_,
                            dZarray_,
                            dYarray_,
                            dWarray_,
                            batchCount );
             break;
-        case 4:  kronmult4_batched<T><<< batchCount, nthreads >>>( n,
+        case 4:  hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult4_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
                            dAarray_,
                            dZarray_,
                            dYarray_,
                            dWarray_,
                            batchCount );
             break;
-        case 5:  kronmult5_batched<T><<< batchCount, nthreads >>>( n,
+        case 5:  hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult5_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
                            dAarray_,
                            dZarray_,
                            dYarray_,
                            dWarray_,
                            batchCount );
             break;
-        case 6:  kronmult6_batched<T><<< batchCount, nthreads >>>( n,
+        case 6:  hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult6_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
                            dAarray_,
                            dZarray_,
                            dYarray_,
@@ -244,8 +244,8 @@ T test_kronmult_batched(  int const idim,
         // -------------------------------------------
         // note important to wait for kernel to finish
         // -------------------------------------------
-        cudaError_t istat = cudaDeviceSynchronize();
-        expect( istat == cudaSuccess );
+        hipError_t istat = hipDeviceSynchronize();
+        expect( istat == hipSuccess );
         }
 #else
 

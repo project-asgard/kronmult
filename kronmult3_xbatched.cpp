@@ -14,7 +14,7 @@ void kronmult3_xbatched(
         int constexpr nwarps = 8;
         int constexpr nthreads = nwarps * warpsize;
 
-        kronmult3_xbatched<double><<< batchCount, nthreads >>>( n, 
+        hipLaunchKernelGGL(HIP_KERNEL_NAME(kronmult3_xbatched<double>), dim3(batchCount), dim3(nthreads ), 0, 0,  n,
            Aarray_, lda,
 	   Xarray_, Yarray_, Warray_, batchCount);
 #else

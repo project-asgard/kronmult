@@ -4,8 +4,7 @@
 
 
 #ifdef USE_GPU
-#include <cuda.h>
-#include <cuda_runtime.h>
+#include <hip/hip_runtime.h>
 #define GLOBAL_FUNCTION  __global__ 
 #define SYNCTHREADS __syncthreads()
 #define SHARED_MEMORY __shared__
