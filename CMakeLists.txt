@@ -5,9 +5,21 @@
 #-------------------------------------------------------------------------------
     project (kronmult LANGUAGES CXX)
 
-    option (USE_GPU "Use CUDA for gpu support" OFF)
+    option (USE_GPU "Use HIP for gpu support" OFF)
     if (USE_GPU)
-        enable_language (CUDA)
+        # search for HIP and libraries
+        if(NOT DEFINED HIP_PATH)
+            if(NOT DEFINED ENV{HIP_PATH})
+                set(HIP_PATH "/opt/rocm/hip" CACHE PATH "Path to which HIP has been installed")
+            else()
+                set(HIP_PATH $ENV{HIP_PATH} CACHE PATH "Path to which HIP has been installed")
+            endif()
+        endif()
+
+        # look for HIP cmake configs in different locations
+        list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
+        find_package(HIP REQUIRED 4.0)
+        #enable_language (HIP)
     endif ()
 
 #-------------------------------------------------------------------------------
@@ -60,8 +72,8 @@
         if (USE_GPU)
             target_compile_features (${target} PUBLIC cuda_std_14)
             get_target_property (SOURCES ${target} SOURCES)
-            set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE CUDA)
-            set_target_properties (${target} PROPERTIES CUDA_ARCHITECTURES 60)
+            set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP)
+            set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 60)
         endif ()
     endmacro ()
 
