@@ -16,10 +16,18 @@
             endif()
         endif()
 
+        set(HIP_VERBOSE_BUILD ON CACHE STRING "Verbose compilation for HIP")
+
         # look for HIP cmake configs in different locations
         list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
         find_package(HIP REQUIRED 4.0)
         #enable_language (HIP)
+
+        message(STATUS "HIP PLATFORM: ${HIP_PLATFORM}")
+        message(STATUS "HIP COMPILER: ${HIP_COMPILER}")
+        message(STATUS "HIP RUNTIME: ${HIP_RUNTIME}")
+        message(STATUS "HIP Includes: ${HIP_INCLUDE_DIRS}")
+        message(STATUS "HIP Libraries: ${HIP_LIBRARIES}")
     endif ()
 
 #-------------------------------------------------------------------------------
@@ -70,10 +78,12 @@
 #-------------------------------------------------------------------------------
     macro (target_set_cuda target)
         if (USE_GPU)
-            target_compile_features (${target} PUBLIC cuda_std_14)
+            #target_compile_features (${target} PUBLIC cuda_std_14)
             get_target_property (SOURCES ${target} SOURCES)
-            set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP)
-            set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 60)
+            #set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP)
+            set_source_files_properties (${SOURCES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
+            set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 86)
+            set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
         endif ()
     endmacro ()
 
