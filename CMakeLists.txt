@@ -20,6 +20,7 @@
 
         # look for HIP cmake configs in different locations
         list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
+        list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
         find_package(HIP REQUIRED 4.0)
         #enable_language (HIP)
 
@@ -84,6 +85,8 @@
             set_source_files_properties (${SOURCES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
             set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 86)
             set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
+            set_target_properties (${target} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
+            target_include_directories(${target} PRIVATE ${HIP_INCLUDE_DIRS} ${HIP_PATH}/include)
         endif ()
     endmacro ()
 
@@ -136,12 +139,13 @@
     target_compile_options (kron
                             PUBLIC
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
-                            $<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
+                            #$<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
+                            $<$<TARGET_PROPERTY:HIP_SOURCE_PROPERTY_FORMAT>:--compiler-options -fPIC --keep-device-functions>
     )
 
     target_compile_definitions (kron
                                 PUBLIC
-                                $<$<COMPILE_LANGUAGE:CUDA>:USE_GPU>
+                                $<$<TARGET_PROPERTY:HIP_SOURCE_PROPERTY_FORMAT>:USE_GPU>
     )
 
     if (OpenMP_CXX_FOUND)
