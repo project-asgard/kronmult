@@ -16,11 +16,31 @@
             endif()
         endif()
 
+        # set HIP_CLANG_PATH for potential installs in non-standard locations (such as rocm with spack)
+        if (NOT DEFINED HIP_CLANG_PATH)
+            if(NOT DEFINED ENV{HIP_CLANG_PATH})
+                set(HIP_CLANG_PATH "${ROCM_PATH}/llvm/bin" CACHE PATH "Path to HIP clang binaries")
+            else()
+                set(HIP_CLANG_PATH $ENV{HIP_CLANG_PATH} CACHE PATH "Path to HIP clang binaries")
+            endif()
+        endif()
+
+        # note: could probably grab this path directly using hipconfig?
+        if (NOT DEFINED HIP_CLANG_INCLUDE_PATH)
+            if(NOT DEFINED ENV{HIP_CLANG_INCLUDE_PATH})
+                # probably need a better way to get the compiler version.. this will cause non-existent p\aths for non-clang compilers
+                set(HIP_CLANG_INCLUDE_PATH "${HIP_CLANG_PATH}/../lib/clang/${CMAKE_CXX_COMPILER_VERSION}/include" CACHE PATH "Path to HIP clang include directory")
+            else()
+                set(HIP_CLANG_INCLUDE_PATH $ENV{HIP_CLANG_INCLUDE_PATH} CACHE PATH "Path to HIP clang include directory")
+            endif()
+        endif()
+
         set(HIP_VERBOSE_BUILD ON CACHE STRING "Verbose compilation for HIP")
 
         # look for HIP cmake configs in different locations
         list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
         list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
+        #set(CMAKE_HIP_ARCHITECTURES OFF)
         find_package(HIP REQUIRED 4.0)
         #enable_language (HIP)
 
@@ -86,6 +106,7 @@
             set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 86)
             set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
             set_target_properties (${target} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
+            # HIP_INCLUDE_DIRS is not getting set for nvidia platforms
             target_include_directories(${target} PRIVATE ${HIP_INCLUDE_DIRS} ${HIP_PATH}/include)
         endif ()
     endmacro ()
