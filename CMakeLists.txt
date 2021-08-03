@@ -35,11 +35,32 @@
             endif()
         endif()
 
+        # try to find hipconfig executable which can help detect platforms and include dirs
+        find_program(HIPCONFIG_PATH hipconfig HINTS "${HIP_PATH}/bin")
+        if(HIPCONFIG_PATH)
+            execute_process(COMMAND ${HIPCONFIG_PATH} --platform OUTPUT_VARIABLE KRONMULT_HIP_PLATFORM)
+        elseif(DEFINED ENV{HIP_PLATFORM})
+            set(KRONMULT_HIP_PLATFORM "$ENV{HIP_PLATFORM}")
+        else()
+            message(FATAL_ERROR "Could not determine HIP platform, make sure HIP_PLATFORM is set")
+        endif()
+
+        message(STATUS "HIP platform has been detected as ${KRONMULT_HIP_PLATFORM}")
+        # hip >= 4.2 is now using "amd" to identify platform
+        if(KRONMULT_HIP_PLATFORM STREQUAL "hcc" OR KRONMULT_HIP_PLATFORM STREQUAL "amd")
+            set(KRONMULT_PLATFORM_AMD 1)
+        # hip <= 4.1 uses "nvcc" to identify nvidia platforms, >= 4.2 uses "nvidia"
+        elseif(KRONMULT_HIP_PLATFORM STREQUAL "nvcc" OR KRONMULT_HIP_PLATFORM STREQUAL "nvidia")
+            set(KRONMULT_PLATFORM_NVCC 1)
+        endif()
+
         set(HIP_VERBOSE_BUILD ON CACHE STRING "Verbose compilation for HIP")
 
         # look for HIP cmake configs in different locations
         list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
+        list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
         list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
+        list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
         #set(CMAKE_HIP_ARCHITECTURES OFF)
         find_package(HIP REQUIRED 4.0)
         #enable_language (HIP)
@@ -161,7 +182,7 @@
                             PUBLIC
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             #$<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
-                            $<$<TARGET_PROPERTY:HIP_SOURCE_PROPERTY_FORMAT>:--compiler-options -fPIC --keep-device-functions>
+                            #$<$<TARGET_PROPERTY:HIP_SOURCE_PROPERTY_FORMAT>:--compiler-options -fPIC --keep-device-functions>
     )
 
     target_compile_definitions (kron
