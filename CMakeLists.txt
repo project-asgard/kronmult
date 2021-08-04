@@ -7,6 +7,9 @@
 
     option (USE_GPU "Use HIP for gpu support" OFF)
     if (USE_GPU)
+        set(KRONMULT_PLATFORM_AMD 0)
+        set(KRONMULT_PLATFORM_NVCC 0)
+
         # search for HIP and libraries
         if(NOT DEFINED HIP_PATH)
             if(NOT DEFINED ENV{HIP_PATH})
@@ -70,6 +73,18 @@
         message(STATUS "HIP RUNTIME: ${HIP_RUNTIME}")
         message(STATUS "HIP Includes: ${HIP_INCLUDE_DIRS}")
         message(STATUS "HIP Libraries: ${HIP_LIBRARIES}")
+
+        if(KRONMULT_PLATFORM_NVCC)
+            find_package(CUDA 9.0 REQUIRED)
+            include_directories(${CUDA_INCLUDE_DIRS})
+            enable_language(CUDA)
+            set (CMAKE_CUDA_STANDARD 14)
+            set (CMAKE_CUDA_STANDARD_REQUIRED ON)
+            add_compile_definitions(__HIP_PLATFORM_NVCC__ __HIP_PLATFORM_NVIDIA__)
+        else()
+            add_compile_definitions(__HIP_PLATFORM_HCC__ __HIP_PLATFORM_AMD__)
+        endif()
+
     endif ()
 
 #-------------------------------------------------------------------------------
