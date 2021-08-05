@@ -196,8 +196,8 @@
     target_compile_options (kron
                             PUBLIC
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
-                            #$<$<COMPILE_LANGUAGE:CUDA>:--compiler-options -fPIC --keep-device-functions>
-                            #$<$<TARGET_PROPERTY:HIP_SOURCE_PROPERTY_FORMAT>:--compiler-options -fPIC --keep-device-functions>
+                            $<$<BOOL:${KRONMULT_PLATFORM_NVCC}>:--compiler-options -fPIC --keep-device-functions>
+                            $<$<BOOL:${KRONMULT_PLATFORM_AMD}>:--offload-arch=gfx906>
     )
 
     target_compile_definitions (kron
