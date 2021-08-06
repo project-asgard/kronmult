@@ -31,7 +31,7 @@
         # note: could probably grab this path directly using hipconfig?
         if (NOT DEFINED HIP_CLANG_INCLUDE_PATH)
             if(NOT DEFINED ENV{HIP_CLANG_INCLUDE_PATH})
-                # probably need a better way to get the compiler version.. this will cause non-existent p\aths for non-clang compilers
+                # probably need a better way to get the compiler version.. this will cause non-existent paths for non-clang compilers
                 set(HIP_CLANG_INCLUDE_PATH "${HIP_CLANG_PATH}/../lib/clang/${CMAKE_CXX_COMPILER_VERSION}/include" CACHE PATH "Path to HIP clang include directory")
             else()
                 set(HIP_CLANG_INCLUDE_PATH $ENV{HIP_CLANG_INCLUDE_PATH} CACHE PATH "Path to HIP clang include directory")
@@ -60,13 +60,11 @@
         set(HIP_VERBOSE_BUILD ON CACHE STRING "Verbose compilation for HIP")
 
         # look for HIP cmake configs in different locations
-        list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
-        list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/cmake" "${ROCM_PATH}")
-        list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
-        list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
-        #set(CMAKE_HIP_ARCHITECTURES OFF)
+        list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
+        list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/cmake" "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
+        #set(CMAKE_HIP_ARCHITECTURES OFF) # enable if using CMake 3.21
         find_package(HIP REQUIRED 4.0)
-        #enable_language (HIP)
+        #enable_language (HIP) # enable if using CMake 3.21
 
         message(STATUS "HIP PLATFORM: ${HIP_PLATFORM}")
         message(STATUS "HIP COMPILER: ${HIP_COMPILER}")
@@ -135,13 +133,20 @@
 #-------------------------------------------------------------------------------
     macro (target_set_cuda target)
         if (USE_GPU)
-            #target_compile_features (${target} PUBLIC cuda_std_14)
             get_target_property (SOURCES ${target} SOURCES)
-            #set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP)
-            set_source_files_properties (${SOURCES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
-            set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 86)
-            set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
+            #set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP) # enable if using CMake 3.21
+
+            if(KRONMULT_PLATFORM_NVCC)
+                target_compile_features (${target} PUBLIC cuda_std_14)
+                set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE CUDA)
+                set_target_properties (${target} PROPERTIES CUDA_ARCHITECTURES 86)
+            else()
+                set_source_files_properties (${SOURCES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
+                set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 86)
+                set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
+            endif()
             set_target_properties (${target} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
+
             # HIP_INCLUDE_DIRS is not getting set for nvidia platforms
             target_include_directories(${target} PRIVATE ${HIP_INCLUDE_DIRS} ${HIP_PATH}/include)
         endif ()
