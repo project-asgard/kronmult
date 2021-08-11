@@ -6,6 +6,7 @@
     project (kronmult LANGUAGES CXX)
 
     option (USE_GPU "Use HIP for gpu support" OFF)
+    set(GPU_ARCH "86" CACHE STRING "GPU architecture code for AMD/NVIDIA")
     if (USE_GPU)
         set(KRONMULT_PLATFORM_AMD 0)
         set(KRONMULT_PLATFORM_NVCC 0)
@@ -139,10 +140,10 @@
             if(KRONMULT_PLATFORM_NVCC)
                 target_compile_features (${target} PUBLIC cuda_std_14)
                 set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE CUDA)
-                set_target_properties (${target} PROPERTIES CUDA_ARCHITECTURES 86)
+                set_target_properties (${target} PROPERTIES CUDA_ARCHITECTURES ${GPU_ARCH})
             else()
                 set_source_files_properties (${SOURCES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
-                set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES 86)
+                set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES ${GPU_ARCH})
                 set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
             endif()
             set_target_properties (${target} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
@@ -202,7 +203,7 @@
                             PUBLIC
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             $<$<BOOL:${KRONMULT_PLATFORM_NVCC}>:--compiler-options -fPIC --keep-device-functions>
-                            $<$<BOOL:${KRONMULT_PLATFORM_AMD}>:--offload-arch=gfx906>
+                            $<$<BOOL:${KRONMULT_PLATFORM_AMD}>:--offload-arch=${GPU_ARCH}>
     )
 
     target_compile_definitions (kron
