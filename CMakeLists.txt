@@ -149,7 +149,7 @@
             set_target_properties (${target} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
 
             # HIP_INCLUDE_DIRS is not getting set for nvidia platforms
-            target_include_directories(${target} PRIVATE ${HIP_INCLUDE_DIRS} ${HIP_PATH}/include)
+            target_include_directories(${target} SYSTEM PRIVATE ${HIP_INCLUDE_DIRS} ${HIP_PATH}/include)
         endif ()
     endmacro ()
 
