@@ -208,7 +208,7 @@
 
     target_compile_definitions (kron
                                 PUBLIC
-                                $<$<TARGET_PROPERTY:HIP_SOURCE_PROPERTY_FORMAT>:USE_GPU>
+                                $<$<BOOL:${USE_GPU}>:USE_GPU>
     )
 
     if (OpenMP_CXX_FOUND)
