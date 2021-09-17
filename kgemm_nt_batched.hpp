@@ -50,8 +50,8 @@ void kgemm_nt_batched( int const mm, int const nn, int const kk,
 #ifdef USE_GPU
         int const iz_start = blockIdx.x + 1;
         int const iz_size =  gridDim.x;
-        assert( gridDim.y == 1);
-        assert( gridDim.z == 1);
+        expect( gridDim.y == 1);
+        expect( gridDim.z == 1);
 #else
         int const iz_start = 1;
         int const iz_size = 1;

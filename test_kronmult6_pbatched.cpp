@@ -28,7 +28,7 @@ void host2gpu( void *dest, void *src, size_t nbytes )
                                         src, 
                                         nbytes,  
                                         cudaMemcpyHostToDevice );
-        assert( istat == cudaSuccess );
+        expect( istat == cudaSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -42,7 +42,7 @@ void gpu2host( void *dest, void *src, size_t nbytes )
                                         src,
                                         nbytes,
                                         cudaMemcpyDeviceToHost);
-        assert( istat == cudaSuccess );
+        expect( istat == cudaSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -54,11 +54,11 @@ void *myalloc( size_t nbytes ) {
               void *devPtr = nullptr;
 #ifdef USE_GPU
               cudaError_t istat = cudaMalloc( &devPtr, nbytes );
-              assert( istat == cudaSuccess );
+              expect( istat == cudaSuccess );
 #else
               devPtr = malloc( nbytes );
 #endif
-              assert( devPtr != nullptr );
+              expect( devPtr != nullptr );
               return(devPtr);
 }
 
@@ -66,7 +66,7 @@ static inline
 void myfree( void * devPtr ) {
 #ifdef USE_GPU
                 cudaError_t istat = cudaFree( devPtr);
-                assert( istat == cudaSuccess );
+                expect( istat == cudaSuccess );
 #else
                 free( devPtr );
 #endif
@@ -105,14 +105,14 @@ T test_kronmult_pbatched(  int const idim,
         T *Zarray_ = (T *) malloc( sizeof(T)*Xsize * batchCount);
         T *Warray_ = (T *) malloc( sizeof(T)*Xsize * batchCount);
 
-        assert( Aarray_ != nullptr );
-        assert( Xarray_ != nullptr );
-        assert( Yarray_ != nullptr );
-        assert( Y2array_ != nullptr );
+        expect( Aarray_ != nullptr );
+        expect( Xarray_ != nullptr );
+        expect( Yarray_ != nullptr );
+        expect( Y2array_ != nullptr );
 
 
-        assert( Zarray_ != nullptr );
-        assert( Warray_ != nullptr );
+        expect( Zarray_ != nullptr );
+        expect( Warray_ != nullptr );
 
         T *dAarray_ = (T *) myalloc( sizeof(T)*n*n*idim*batchCount);
         T *dXarray_ = (T *) myalloc( sizeof(T)*Xsize * batchCount );
@@ -120,11 +120,11 @@ T test_kronmult_pbatched(  int const idim,
         T *dYarray_ = (T *) myalloc( sizeof(T)*Xsize * batchCount );
         T *dWarray_ = (T *) myalloc( sizeof(T)*Xsize * batchCount );
 
-        assert( dAarray_ != nullptr );
-        assert( dXarray_ != nullptr );
-        assert( dYarray_ != nullptr );
-        assert( dZarray_ != nullptr );
-        assert( dWarray_ != nullptr );
+        expect( dAarray_ != nullptr );
+        expect( dXarray_ != nullptr );
+        expect( dYarray_ != nullptr );
+        expect( dZarray_ != nullptr );
+        expect( dWarray_ != nullptr );
 
         T** pdXarray_ = (T**) malloc( sizeof(T*) * batchCount );
         T** pdYarray_ = (T**) malloc( sizeof(T*) * batchCount );
@@ -136,10 +136,10 @@ T test_kronmult_pbatched(  int const idim,
         T** dpdYarray_ = (T**) myalloc( sizeof(T*) * batchCount );
         T** dpdWarray_ = (T**) myalloc( sizeof(T*) * batchCount );
 
-        assert( dpdXarray_ != nullptr );
-        assert( dpdYarray_ != nullptr );
-        assert( dpdZarray_ != nullptr );
-        assert( dpdWarray_ != nullptr );
+        expect( dpdXarray_ != nullptr );
+        expect( dpdYarray_ != nullptr );
+        expect( dpdZarray_ != nullptr );
+        expect( dpdWarray_ != nullptr );
 
         auto Aarray = [&] (int const i, 
                            int const j, 
@@ -312,14 +312,14 @@ T test_kronmult_pbatched(  int const idim,
                            batchCount );
             break;
          default: 
-            assert( false );
+            expect( false );
         };
 
         // -------------------------------------------
         // note important to wait for kernel to finish
         // -------------------------------------------
         cudaError_t istat = cudaDeviceSynchronize();
-        assert( istat == cudaSuccess );
+        expect( istat == cudaSuccess );
         }
 #else
 
@@ -372,7 +372,7 @@ T test_kronmult_pbatched(  int const idim,
                            batchCount );
             break;
          default: 
-            assert( false );
+            expect( false );
         };
 
         }

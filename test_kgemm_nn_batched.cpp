@@ -22,7 +22,7 @@ void host2gpu( void *dest, void *src, size_t nbytes )
                                         src, 
                                         nbytes,  
                                         cudaMemcpyHostToDevice );
-        assert( istat == cudaSuccess );
+        expect( istat == cudaSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -36,7 +36,7 @@ void gpu2host( void * dest, void * src, size_t nbytes )
                                         src,
                                         nbytes,
                                         cudaMemcpyDeviceToHost);
-        assert( istat == cudaSuccess );
+        expect( istat == cudaSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -48,11 +48,11 @@ void *myalloc( size_t const nbytes ) {
               void *devPtr = nullptr;
 #ifdef USE_GPU
               cudaError_t istat = cudaMalloc( &devPtr, nbytes );
-              assert( istat == cudaSuccess );
+              expect( istat == cudaSuccess );
 #else
               devPtr = malloc( nbytes );
 #endif
-              assert( devPtr != nullptr );
+              expect( devPtr != nullptr );
               return(devPtr);
 }
 
@@ -60,7 +60,7 @@ static inline
 void myfree( void * devPtr ) {
 #ifdef USE_GPU
                 cudaError_t istat = cudaFree( devPtr);
-                assert( istat == cudaSuccess );
+                expect( istat == cudaSuccess );
 #else
                 free( devPtr );
 #endif
@@ -138,9 +138,9 @@ T test_kgemm_nn_batched( int const mm,
                 T * const B_ = new T[ldB*ncolB];
                 T * const C_ = new T[ldC*ncolC];
 
-                assert( A_ != nullptr);
-                assert( B_ != nullptr);
-                assert( C_ != nullptr);
+                expect( A_ != nullptr);
+                expect( B_ != nullptr);
+                expect( C_ != nullptr);
 
                 Aarray_[ibatch] = A_;
                 Barray_[ibatch] = B_;
@@ -210,9 +210,9 @@ T test_kgemm_nn_batched( int const mm,
                 size_t const nbytes_C = sizeof(T)*ldC*ncolC;
                 T *dC = (T *) myalloc( nbytes_C );;
 
-                assert( dA != nullptr );
-                assert( dB != nullptr );
-                assert( dC != nullptr );
+                expect( dA != nullptr );
+                expect( dB != nullptr );
+                expect( dC != nullptr );
 
                 hdAarray_[ibatch] = dA;
                 hdBarray_[ibatch] = dB;
@@ -329,7 +329,7 @@ T test_kgemm_nn_batched( int const mm,
         int const nthreads = nwarps * warpsize;
 
         cudaError_t istat_sync_start = cudaDeviceSynchronize();
-        assert( istat_sync_start == cudaSuccess );
+        expect( istat_sync_start == cudaSuccess );
 
 
         kgemm_nn_batched<T><<< batchCount, nthreads >>>( mm,nn,kk, 
@@ -341,7 +341,7 @@ T test_kgemm_nn_batched( int const mm,
                           batchCount);
 
         cudaError_t istat_sync_end = cudaDeviceSynchronize();
-        assert( istat_sync_end == cudaSuccess );
+        expect( istat_sync_end == cudaSuccess );
         }
 #else
         {

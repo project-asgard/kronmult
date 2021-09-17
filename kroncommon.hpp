@@ -25,6 +25,14 @@
 #include <algorithm>
 #include <vector>
 
+// simple layer over assert to prevent unused variable warnings when
+// expects disabled
+#ifndef NDEBUG
+#define expect(cond) assert(cond)
+#else
+#define expect(cond) ((void)(cond))
+#endif
+
 #ifndef USE_GPU
 
 static inline

@@ -40,15 +40,15 @@ void kgemm_nt( int const mm, int const nn, int const kk,
 	int constexpr warpsize = 32;
         int const nthreads = blockDim.x; 
 
-        assert( blockDim.y == 1);
-        assert( blockDim.z == 1);
+        expect( blockDim.y == 1);
+        expect( blockDim.z == 1);
 
         // -----------------------------------------
         // reorganize threads as nx_threads by ny_threads
         // -----------------------------------------
         int const nx_threads = warpsize;
         int const ny_threads = max(1,nthreads/nx_threads);
-        assert( (nthreads % warpsize) == 0);
+        expect( (nthreads % warpsize) == 0);
 
         int const ix_start = ( threadIdx.x % nx_threads ) + 1;
         int const iy_start = (threadIdx.x/nx_threads) + 1;
@@ -70,10 +70,10 @@ void kgemm_nt( int const mm, int const nn, int const kk,
 	int const ij_size = 1;
 #endif
 
-        assert( ix_start >= 1);
-        assert( iy_start >= 1);
-        assert( ix_size >= 1 );
-        assert( iy_size >= 1 );
+        expect( ix_start >= 1);
+        expect( iy_start >= 1);
+        expect( ix_size >= 1 );
+        expect( iy_size >= 1 );
 
 
         //  ------------------------------------
