@@ -145,6 +145,7 @@
 
         add_test (NAME ${target}
                   COMMAND ${target})
+        set_tests_properties (${target} PROPERTIES ENVIRONMENT OMP_NUM_THREADS=1)
     endmacro ()
 
 #-------------------------------------------------------------------------------
