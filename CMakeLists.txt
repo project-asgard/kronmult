@@ -1,12 +1,12 @@
     cmake_minimum_required (VERSION 3.21 FATAL_ERROR)
 
 #-------------------------------------------------------------------------------
-#  Setup languages to use. Only enable CUDA if GPU's are in use.
+#  Setup languages to use. Only enable HIP if GPU's are in use.
 #-------------------------------------------------------------------------------
     project (kronmult LANGUAGES CXX)
 
     option (USE_GPU "Use HIP for gpu support" OFF)
-    set(GPU_ARCH "86" CACHE STRING "GPU architecture code for AMD/NVIDIA")
+    set(GPU_ARCH "70" CACHE STRING "GPU architecture code for AMD/NVIDIA")
     if (USE_GPU)
         set(KRONMULT_PLATFORM_AMD 0)
         set(KRONMULT_PLATFORM_NVCC 0)
@@ -63,10 +63,10 @@
         # look for HIP cmake configs in different locations
         list(APPEND CMAKE_MODULE_PATH "${HIP_PATH}/cmake" "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
         list(APPEND CMAKE_PREFIX_PATH "${HIP_PATH}/cmake" "${HIP_PATH}/lib/cmake" "${ROCM_PATH}")
-        set(CMAKE_HIP_ARCHITECTURES OFF) # enable if using CMake 3.21
+        set(CMAKE_HIP_ARCHITECTURES OFF)
         find_package(HIP REQUIRED 4.0)
         if(KRONMULT_PLATFORM_AMD)
-            enable_language (HIP) # enable if using CMake 3.21
+            enable_language (HIP)
             set_target_properties(hip-lang::device PROPERTIES INTERFACE_INCLUDE_DIRECTORIES ${HIP_PATH}/include)
         endif()
 
@@ -104,7 +104,7 @@
 #  Sanitizer options
 #-------------------------------------------------------------------------------
     set (CMAKE_CXX_FLAGS_SANITIZED -fno-omit-frame-pointer)
-    set (CMAKE_CUDA_FLAGS_SANITIZED -fno-omit-frame-pointer)
+    set (CMAKE_HIP_FLAGS_SANITIZED -fno-omit-frame-pointer)
     set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "")
     set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "")
 
@@ -115,7 +115,7 @@
 
         if (${SANITIZE_${upper_name}})
             set (CMAKE_CXX_FLAGS_SANITIZED "${CMAKE_CXX_FLAGS_SANITIZED} -fsanitize=${name}")
-            set (CMAKE_CUDA_FLAGS_SANITIZED "${CMAKE_CUDA_FLAGS_SANITIZED} -fsanitize=${name}")
+            set (CMAKE_HIP_FLAGS_SANITIZED "${CMAKE_HIP_FLAGS_SANITIZED} -fsanitize=${name}")
             set (CMAKE_EXE_LINKER_FLAGS_SANITIZED "${CMAKE_EXE_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
             set (CMAKE_SHARED_LINKER_FLAGS_SANITIZED "${CMAKE_SHARED_LINKER_FLAGS_SANITIZED} -fsanitize=${name}")
         endif ()
@@ -128,17 +128,17 @@
     register_sanitizer_option (undefined ON)
 
 #-------------------------------------------------------------------------------
-#  Define a macro function to set a targets source files to the CUDA language.
+#  Define a macro function to set a targets source files to the HIP language.
 #
 #  Can't use $<$<COMPILE_LANGUAGE:LANG>:foo> generator expressions for
 #  target_compile_features
 #
 #  Need to handle this with an explicit if statement.
 #-------------------------------------------------------------------------------
-    macro (target_set_cuda target)
+    macro (target_set_hip target)
         if (USE_GPU)
             get_target_property (SOURCES ${target} SOURCES)
-            set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP) # enable if using CMake 3.21
+            set_source_files_properties (${SOURCES} PROPERTIES LANGUAGE HIP)
 
             if(KRONMULT_PLATFORM_NVCC)
                 target_compile_features (${target} PUBLIC cuda_std_14)
@@ -146,7 +146,7 @@
                 set_target_properties (${target} PROPERTIES CUDA_ARCHITECTURES ${GPU_ARCH})
             else()
                 set_source_files_properties (${SOURCES} PROPERTIES HIP_SOURCE_PROPERTY_FORMAT 1)
-                set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES ${GPU_ARCH})
+                set_target_properties (${target} PROPERTIES HIP_ARCHITECTURES gfx${GPU_ARCH})
                 set_target_properties (${target} PROPERTIES LINKER_LANGUAGE HIP)
                 #target_link_libraries(${target} PUBLIC hip-lang::device)
             endif()
@@ -168,7 +168,7 @@
     add_library (kron SHARED)
 
 #  Note can't use generator expressions on the source files since it interfers
-#  with setting the source property to target CUDA.
+#  with setting the source property to target HIP.
     target_sources (kron
 
                     PRIVATE
@@ -201,13 +201,13 @@
     )
 
     target_compile_features (kron PUBLIC cxx_std_17)
-    target_set_cuda (kron)
+    target_set_hip (kron)
 
     target_compile_options (kron
                             PUBLIC
                             $<$<COMPILE_LANGUAGE:CXX>:-Wall -Wextra -Wpedantic>
                             $<$<BOOL:${KRONMULT_PLATFORM_NVCC}>:--compiler-options -fPIC --keep-device-functions>
-                            $<$<BOOL:${KRONMULT_PLATFORM_AMD}>:--offload-arch=${GPU_ARCH}>
+                            $<$<BOOL:${KRONMULT_PLATFORM_AMD}>:--offload-arch=gfx${GPU_ARCH}>
     )
 
     target_compile_definitions (kron
@@ -233,7 +233,7 @@
                         PRIVATE
                         ${source}
         )
-        target_set_cuda (${target})
+        target_set_hip (${target})
         target_link_libraries (${target} PUBLIC kron)
 
         add_test (NAME ${target}
