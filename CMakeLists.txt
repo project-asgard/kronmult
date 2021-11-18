@@ -77,8 +77,6 @@
         message(STATUS "HIP Libraries: ${HIP_LIBRARIES}")
 
         if(KRONMULT_PLATFORM_NVCC)
-            find_package(CUDA 9.0 REQUIRED)
-            include_directories(${CUDA_INCLUDE_DIRS})
             enable_language(CUDA)
             set (CMAKE_CUDA_STANDARD 14)
             set (CMAKE_CUDA_STANDARD_REQUIRED ON)
