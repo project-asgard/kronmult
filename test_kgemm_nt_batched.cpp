@@ -6,7 +6,7 @@
 #include <cmath>
 
 #ifdef USE_GPU
-#include <cuda_runtime.h>
+#include <hip/hip_runtime.h>
 #else
 #include <stdlib.h>
 #include <string.h>
@@ -19,11 +19,11 @@ static inline
 void host2gpu( void *dest, void *src, size_t nbytes )
 {
 #ifdef USE_GPU
-        cudaError_t istat = cudaMemcpy( dest, 
-                                        src, 
-                                        nbytes,  
-                                        cudaMemcpyHostToDevice );
-        expect( istat == cudaSuccess );
+        hipError_t istat = hipMemcpy( dest,
+                                        src,
+                                        nbytes,
+                                        hipMemcpyHostToDevice );
+        expect( istat == hipSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -33,11 +33,11 @@ static inline
 void gpu2host( void * dest, void * src, size_t nbytes )
 {
 #ifdef USE_GPU
-        cudaError_t istat = cudaMemcpy( dest,
+        hipError_t istat = hipMemcpy( dest,
                                         src,
                                         nbytes,
-                                        cudaMemcpyDeviceToHost);
-        expect( istat == cudaSuccess );
+                                        hipMemcpyDeviceToHost);
+        expect( istat == hipSuccess );
 #else
         memcpy( dest, src, nbytes );
 #endif
@@ -48,8 +48,8 @@ static inline
 void *myalloc( size_t const nbytes ) {
               void *devPtr = nullptr;
 #ifdef USE_GPU
-              cudaError_t istat = cudaMalloc( &devPtr, nbytes );
-              expect( istat == cudaSuccess );
+              hipError_t istat = hipMalloc( &devPtr, nbytes );
+              expect( istat == hipSuccess );
 #else
               devPtr = malloc( nbytes );
 #endif
@@ -60,8 +60,8 @@ void *myalloc( size_t const nbytes ) {
 static inline
 void myfree( void * devPtr ) {
 #ifdef USE_GPU
-                cudaError_t istat = cudaFree( devPtr);
-                expect( istat == cudaSuccess );
+                hipError_t istat = hipFree( devPtr);
+                expect( istat == hipSuccess );
 #else
                 free( devPtr );
 #endif
@@ -327,11 +327,11 @@ T test_kgemm_nt_batched( int const mm,
         int const nwarps = min( min(32,mm), min(nn,kk));
         int const nthreads = nwarps * warpsize;
 
-        cudaError_t istat_sync_start = cudaDeviceSynchronize();
-        expect( istat_sync_start == cudaSuccess );
+        hipError_t istat_sync_start = hipDeviceSynchronize();
+        expect( istat_sync_start == hipSuccess );
 
 
-        kgemm_nt_batched<T><<< batchCount, nthreads >>>( mm,nn,kk, 
+        hipLaunchKernelGGL(HIP_KERNEL_NAME(kgemm_nt_batched<T>), dim3(batchCount), dim3(nthreads ), 0, 0,  mm,nn,kk,
                           alpha,
                           ddAarray_, dldAarray_,
                           ddBarray_, dldBarray_,
@@ -339,8 +339,8 @@ T test_kgemm_nt_batched( int const mm,
                           ddCarray_, dldCarray_,
                           batchCount);
 
-        cudaError_t istat_sync_end = cudaDeviceSynchronize();
-        expect( istat_sync_end == cudaSuccess );
+        hipError_t istat_sync_end = hipDeviceSynchronize();
+        expect( istat_sync_end == hipSuccess );
         }
 #else
         {

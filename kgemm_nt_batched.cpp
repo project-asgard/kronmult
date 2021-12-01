@@ -19,7 +19,7 @@ void kgemm_nt_batched( int const mm, int const nn, int const kk,
         int constexpr nwarps = 8;
         int constexpr nthreads = nwarps * warpsize;
 
-        kgemm_nt_batched<double><<< batchCount, nthreads >>>( mm,nn,kk,
+        hipLaunchKernelGGL(HIP_KERNEL_NAME(kgemm_nt_batched<double>), dim3(batchCount), dim3(nthreads ), 0, 0,  mm,nn,kk,
                           alpha,
                           Aarray_, ldAarray_,
                           Barray_, ldBarray_,
