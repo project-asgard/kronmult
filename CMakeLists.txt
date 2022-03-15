@@ -103,6 +103,39 @@
                     kronmult6_pbatched.cpp
                     kronmult6_xbatched.cpp
     )
+    target_precompile_headers (kron
+
+                               PUBLIC
+                               kgemm_nn.hpp
+                               kgemm_nn_batched.hpp
+                               kgemm_nt.hpp
+                               kgemm_nt_batched.hpp
+                               kroncommon.hpp
+                               kronmult1.hpp
+                               kronmult1_batched.hpp
+                               kronmult1_pbatched.hpp
+                               kronmult1_xbatched.hpp
+                               kronmult2.hpp
+                               kronmult2_batched.hpp
+                               kronmult2_pbatched.hpp
+                               kronmult2_xbatched.hpp
+                               kronmult3.hpp
+                               kronmult3_batched.hpp
+                               kronmult3_pbatched.hpp
+                               kronmult3_xbatched.hpp
+                               kronmult4.hpp
+                               kronmult4_batched.hpp
+                               kronmult4_pbatched.hpp
+                               kronmult4_xbatched.hpp
+                               kronmult5.hpp
+                               kronmult5_batched.hpp
+                               kronmult5_pbatched.hpp
+                               kronmult5_xbatched.hpp
+                               kronmult6.hpp
+                               kronmult6_batched.hpp
+                               kronmult6_pbatched.hpp
+                               kronmult6_xbatched.hpp
+    )
     target_include_directories (kron
                                 PUBLIC
                                 ${CMAKE_CURRENT_SOURCE_DIR}
@@ -122,9 +155,10 @@
                                 $<$<COMPILE_LANGUAGE:CUDA>:USE_GPU>
     )
 
-    if (OpenMP_CXX_FOUND)
-        target_link_libraries (kron PUBLIC OpenMP::OpenMP_CXX)
-    endif ()
+    target_link_libraries (kron
+                           PUBLIC
+                           $<$<BOOL:${OpenMP_CXX_FOUND}>:OpenMP::OpenMP_CXX>
+    )
 
 #-------------------------------------------------------------------------------
 #  Setup testing
@@ -142,6 +176,7 @@
         )
         target_set_cuda (${target})
         target_link_libraries (${target} PUBLIC kron)
+        target_precompile_headers (${target} REUSE_FROM kron)
 
         add_test (NAME ${target}
                   COMMAND ${target})
