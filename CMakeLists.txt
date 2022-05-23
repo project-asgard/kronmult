@@ -1,6 +1,11 @@
     cmake_minimum_required (VERSION 3.17 FATAL_ERROR)
 
 #-------------------------------------------------------------------------------
+#  Turn on precompiled headers support.
+#-------------------------------------------------------------------------------
+    option (USE_PCH "Use precompiled headers." OFF)
+
+#-------------------------------------------------------------------------------
 #  Setup languages to use. Only enable CUDA if GPU's are in use.
 #-------------------------------------------------------------------------------
     project (kronmult LANGUAGES CXX)
@@ -106,35 +111,35 @@
     target_precompile_headers (kron
 
                                PUBLIC
-                               kgemm_nn.hpp
-                               kgemm_nn_batched.hpp
-                               kgemm_nt.hpp
-                               kgemm_nt_batched.hpp
-                               kroncommon.hpp
-                               kronmult1.hpp
-                               kronmult1_batched.hpp
-                               kronmult1_pbatched.hpp
-                               kronmult1_xbatched.hpp
-                               kronmult2.hpp
-                               kronmult2_batched.hpp
-                               kronmult2_pbatched.hpp
-                               kronmult2_xbatched.hpp
-                               kronmult3.hpp
-                               kronmult3_batched.hpp
-                               kronmult3_pbatched.hpp
-                               kronmult3_xbatched.hpp
-                               kronmult4.hpp
-                               kronmult4_batched.hpp
-                               kronmult4_pbatched.hpp
-                               kronmult4_xbatched.hpp
-                               kronmult5.hpp
-                               kronmult5_batched.hpp
-                               kronmult5_pbatched.hpp
-                               kronmult5_xbatched.hpp
-                               kronmult6.hpp
-                               kronmult6_batched.hpp
-                               kronmult6_pbatched.hpp
-                               kronmult6_xbatched.hpp
+                               $<$<BOOL:${USE_PCH}>:kgemm_nn.hpp>
+                               $<$<BOOL:${USE_PCH}>:kgemm_nn_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kgemm_nt.hpp>
+                               $<$<BOOL:${USE_PCH}>:kgemm_nt_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kroncommon.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult1.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult1_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult1_pbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult1_xbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult2.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult2_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult2_pbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult2_xbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult3.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult3_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult3_pbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult3_xbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult4.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult4_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult4_pbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult4_xbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult5.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult5_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult5_pbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult5_xbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult6.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult6_batched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult6_pbatched.hpp>
+                               $<$<BOOL:${USE_PCH}>:kronmult6_xbatched.hpp>
     )
     target_include_directories (kron
                                 PUBLIC
@@ -176,7 +181,9 @@
         )
         target_set_cuda (${target})
         target_link_libraries (${target} PUBLIC kron)
-        target_precompile_headers (${target} REUSE_FROM kron)
+        if (${USE_PCH})
+            target_precompile_headers (${target} REUSE_FROM kron)
+        endif ()
 
         add_test (NAME ${target}
                   COMMAND ${target})
