@@ -149,25 +149,27 @@
     target_compile_features (kron PUBLIC cxx_std_17)
     target_set_cuda (kron)
 
-    if (NOT CMAKE_CXX_FLAGS MATCHES "-Wall")
-      target_compile_options (kron
-                              PUBLIC
-                              $<$<COMPILE_LANGUAGE:CXX>:-Wall>
-      )
-    endif()
+    if (ASGARD_RECOMMENDED_DEFAULTS)
+        if (NOT CMAKE_CXX_FLAGS MATCHES "-Wall")
+        target_compile_options (kron
+                                PUBLIC
+                                $<$<COMPILE_LANGUAGE:CXX>:-Wall>
+        )
+        endif()
 
-    if (NOT CMAKE_CXX_FLAGS MATCHES "-Wextra")
-      target_compile_options (kron
-                              PUBLIC
-                              $<$<COMPILE_LANGUAGE:CXX>:-Wextra>
-      )
-    endif()
+        if (NOT CMAKE_CXX_FLAGS MATCHES "-Wextra")
+        target_compile_options (kron
+                                PUBLIC
+                                $<$<COMPILE_LANGUAGE:CXX>:-Wextra>
+        )
+        endif()
 
-    if (NOT CMAKE_CXX_FLAGS MATCHES "-Wpedantic")
-      target_compile_options (kron
-                              PUBLIC
-                              $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic>
-      )
+        if (NOT CMAKE_CXX_FLAGS MATCHES "-Wpedantic")
+        target_compile_options (kron
+                                PUBLIC
+                                $<$<COMPILE_LANGUAGE:CXX>:-Wpedantic>
+        )
+        endif()
     endif()
 
     target_compile_options (kron
