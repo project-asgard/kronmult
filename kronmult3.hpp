@@ -56,14 +56,14 @@ void kronmult3( int const n,
             // Wi viewed as (n^2 by n) array
             // ----------------------------
 
-            auto Xi = [&] (int const i,
-                           int const j) -> T& {
-                    return(  Xi_[ indx2f(i,j,ldXi) ] );
+            auto Xi = [&] (int const ii,
+                           int const jj) -> T& {
+                    return(  Xi_[ indx2f(ii,jj,ldXi) ] );
             };
 
-            auto Wi = [&] (int const i,
-                           int const j) -> T& {
-                    return(  Wi_[ indx2f(i,j,ldWi) ] );
+            auto Wi = [&] (int const ii,
+                           int const jj) -> T& {
+                    return(  Wi_[ indx2f(ii,jj,ldWi) ] );
             };
             // --------------------------------------------------------
             // Wi(1:n^2, 1:n) = Xi(1:n^2, 1:n) * transpose(A1(1:n,1:n))
