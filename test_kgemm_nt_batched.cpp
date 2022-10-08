@@ -471,7 +471,7 @@ T test_kgemm_nt_batched( int const mm,
 
 int main()
 {
-        int const idebug = 0;
+        int idebug = 0;
         int const inc = 7;
         int const kk_max = 65;
         int const mm_max = 65;
@@ -518,7 +518,7 @@ int main()
 
            int batchCount = 16;
            int const n = 8;
-           int const idebug = 1;
+           idebug = 1;
            for(int i=1; i <= 5; i++) {
                 int const mm = std::pow(n,(6-i));
                 int const nn = n;
