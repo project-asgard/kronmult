@@ -40,13 +40,8 @@ void kronmult1( int const n,
     int const ld2 = n;
     int const ld3 = n;
     T const alpha = 1;
-    T const beta = 1;
 
-    kgemm_nn( mm,nn,kk,
-              alpha,  Ap, ld1,
-                      Bp, ld2,
-              beta,   Cp, ld3 );
-
+    kgemm_nn(mm, nn, kk, alpha, Ap, ld1, Bp, ld2, Cp, ld3, beta_one);
 }
 
 

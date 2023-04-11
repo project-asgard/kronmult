@@ -3,9 +3,6 @@
 
 #include "kroncommon.hpp"
 
-
-
-
 template <typename T>
 DEVICE_FUNCTION void kgemm_nn(int const mm, int const nn, int const kk,
                               T const alpha, T const *const A_, int const ldA,
@@ -13,14 +10,12 @@ DEVICE_FUNCTION void kgemm_nn(int const mm, int const nn, int const kk,
                               T *C_, int const ldC) {
 
   if (beta == 1) {
-    kgemm_nn(mm, nn, kk, alpha, A_, ldA, B_, ldB, beta, C_, ldC,
-             [](T &value, T alpha_cij) { atomicAdd(&(value), alpha_cij); });
+    kgemm_nn(mm, nn, kk, alpha, A_, ldA, B_, ldB, C_, ldC, beta_one);
   } else if (beta == 0) {
-    kgemm_nn(mm, nn, kk, alpha, A_, ldA, B_, ldB, beta, C_, ldC,
-             [](T &value, T alpha_cij) { value = alpha_cij; });
+    kgemm_nn(mm, nn, kk, alpha, A_, ldA, B_, ldB, C_, ldC, beta_zero);
   } else {
     kgemm_nn(
-        mm, nn, kk, alpha, A_, ldA, B_, ldB, beta, C_, ldC,
+        mm, nn, kk, alpha, A_, ldA, B_, ldB, C_, ldC,
         [beta](T &value, T alpha_cij) { value = beta * value + alpha_cij; });
   }
 }
@@ -32,8 +27,8 @@ DEVICE_FUNCTION void kgemm_nn(int const mm, int const nn, int const kk,
 template <typename T, typename F>
 DEVICE_FUNCTION void kgemm_nn(int const mm, int const nn, int const kk,
                               T const alpha, T const *const A_, int const ldA,
-                              T const *const B_, int const ldB, T const beta,
-                              T *C_, int const ldC, F func) {
+                              T const *const B_, int const ldB, T *C_,
+                              int const ldC, F func) {
 #ifdef USE_LAMBDA
         auto min = []( int const x, int const y) {
                 return(  (x < y) ? x : y );

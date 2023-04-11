@@ -152,10 +152,10 @@ int indx6f(int const i1,
         // return( (((((i6-1)*n5 + (i5-1))*n4 + (i4-1))*n3 + (i3-1))*n2 + (i2-1))*n1 -1 + i1);
 }
 
+static auto beta_one = [](auto &value, auto alpha_cij) {
+  atomicAdd(&(value), alpha_cij);
+};
 
-
-
-
-
+static auto beta_zero = [](auto &value, auto alpha_cij) { value = alpha_cij; };
 
 #endif

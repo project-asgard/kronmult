@@ -71,7 +71,6 @@ void kronmult2( int const n,
             int const nn = n;
             int const kk = n;
             T const alpha = 1;
-            T const beta = 0;
 
             T const * const  Ap = &(Xi(1,1));
             T const * const  Bp = A1_;
@@ -81,10 +80,7 @@ void kronmult2( int const n,
             int const ld2 = lda;
             int const ld3 = ldWi;
 
-            kgemm_nt( mm,nn,kk, 
-                      alpha, Ap, ld1,
-                             Bp, ld2,
-                      beta,  Cp, ld3 );
+            kgemm_nt(mm, nn, kk, alpha, Ap, ld1, Bp, ld2, Cp, ld3, beta_zero);
     };
 
     int const next_nvec = nvec * n;
