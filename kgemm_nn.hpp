@@ -4,19 +4,36 @@
 #include "kroncommon.hpp"
 
 
+
+
+template <typename T>
+DEVICE_FUNCTION void kgemm_nn(int const mm, int const nn, int const kk,
+                              T const alpha, T const *const A_, int const ldA,
+                              T const *const B_, int const ldB, T const beta,
+                              T *C_, int const ldC) {
+
+  if (beta == 1) {
+    kgemm_nn(mm, nn, kk, alpha, A_, ldA, B_, ldB, beta, C_, ldC,
+             [](T &value, T alpha_cij) { atomicAdd(&(value), alpha_cij); });
+  } else if (beta == 0) {
+    kgemm_nn(mm, nn, kk, alpha, A_, ldA, B_, ldB, beta, C_, ldC,
+             [](T &value, T alpha_cij) { value = alpha_cij; });
+  } else {
+    kgemm_nn(
+        mm, nn, kk, alpha, A_, ldA, B_, ldB, beta, C_, ldC,
+        [beta](T &value, T alpha_cij) { value = beta * value + alpha_cij; });
+  }
+}
+
 //  -----------------------
 //  NotransA and TransB case
 //  C = alpha*A*(B) + beta *C
 //  -----------------------
-template<typename T>
-DEVICE_FUNCTION
-void kgemm_nn( int const mm, int const nn, int const kk, 
-               T const alpha,
-               T const * const A_,  int const ldA,
-               T const * const B_,  int const ldB,
-               T const beta,
-               T * C_,  int const ldC)
-{
+template <typename T, typename F>
+DEVICE_FUNCTION void kgemm_nn(int const mm, int const nn, int const kk,
+                              T const alpha, T const *const A_, int const ldA,
+                              T const *const B_, int const ldB, T const beta,
+                              T *C_, int const ldC, F func) {
 #ifdef USE_LAMBDA
         auto min = []( int const x, int const y) {
                 return(  (x < y) ? x : y );
@@ -186,22 +203,12 @@ void kgemm_nn( int const mm, int const nn, int const kk,
                            int const ic = ia;
                            int const jc = jb;
 			   T const alpha_cij = alpha * cij;
-			   if (beta == 1) {
-                             atomicAdd( &(C(ic,jc)), alpha_cij );
-			     }
-			   else if (beta == 0) {
-		              C(ic,jc) = alpha_cij;
-			      }
-			   else {
-			      C(ic,jc)  =  beta * C(ic,jc) + alpha_cij;
-			   };
-
-		    };
+                           func(C(ic, jc), alpha_cij);
+                    };
 
             }; // end istart
         }; // end jstart
 }
-
 
 #undef min
 #undef max
