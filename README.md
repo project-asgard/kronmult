@@ -1,4 +1,10 @@
-[![Continuous Integration Test](https://github.com/cianciosa/kronmult/actions/workflows/ci_tests.yaml/badge.svg)](https://github.com/cianciosa/kronmult/actions/workflows/ci_tests.yaml)
+## Defunct
+
+Development on this repo has been discontinued and the code is no longer supported.
+
+Despite the generality of the interface, the performance achieved by this implementation of Kronecker multiplication is insufficient to address the problems of interest to the main ASGarD project. The code here has been superseded by series of kernels included into the main ASGarD library and linked directly with the relevant data-structures.
+
+#### Old description and instructions below:
 
 Code to perform 6-dimensional batched kronecker product on  GPU and CPU (using OpenMP).
 
